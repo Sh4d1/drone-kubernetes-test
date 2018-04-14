@@ -19,7 +19,7 @@ spec:
         effect: NoSchedule
       containers:
       - name: test-daemonset
-        image: busybox
+        image: nginx
         resources:
           limits:
             memory: 100Mi
@@ -30,19 +30,19 @@ metadata:
   name: test-daemonset
   namespace: default
   labels:
-    k8s-app: test-daemonset
+    k8s-app: test-deploy
 spec:
   selector:
     matchLabels:
-      name: test-daemonset
+      name: test-deploy
   template:
     metadata:
       labels:
-        name: test-daemonset
+        name: test-deploy
     spec:
       containers:
-      - name: test-daemonset
-        image: busybox
+      - name: test-deploy
+        image: nginx
         resources:
           limits:
             memory: 100Mi
@@ -50,28 +50,28 @@ spec:
 apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
-  name: frontend
+  name: test-replica
   labels:
-    app: guestbook
-    tier: frontend
+    app: test-replica
+    tier: test-replica
 spec:
   # this replicas value is default
   # modify it according to your case
   replicas: 2
   selector:
     matchLabels:
-      tier: frontend
+      tier: test-replica
     matchExpressions:
-      - {key: tier, operator: In, values: [frontend]}
+      - {key: tier, operator: In, values: [test-replica]}
   template:
     metadata:
       labels:
-        app: guestbook
-        tier: frontend
+        app: test-replica
+        tier: test-replica
     spec:
       containers:
-      - name: test-replicaset
-        image: busybox
+      - name: test-replica
+        image: nginx
         resources:
           requests:
             memory: 100Mi
@@ -79,22 +79,19 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: web
+  name: test-state
 spec:
   selector:
     matchLabels:
-      app: nginx # has to match .spec.template.metadata.labels
-  serviceName: "nginx"
+      app: test-state # has to match .spec.template.metadata.labels
+  serviceName: "test-state"
   replicas: 2 # by default is 1
   template:
     metadata:
       labels:
-        app: nginx # has to match .spec.selector.matchLabels
+        app: test-state # has to match .spec.selector.matchLabels
     spec:
       terminationGracePeriodSeconds: 10
       containers:
-      - name: test-statefulset
-        image: k8s.gcr.io/nginx-slim:0.8
-        ports:
-        - containerPort: 80
-          name: web
+      - name: test-state
+        image: nginx
